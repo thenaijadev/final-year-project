@@ -16,14 +16,17 @@ abstract class NewsApiService {
 class NewsApiServiceImplementation implements NewsApiService {
   @override
   FutureEitherArticleOrException getNewsArticles(
-      {required String country, required String apiKey, String? topic}) async {
+      {required String country,
+      required String apiKey,
+      String topic = ''}) async {
     try {
+      final theQuery = topic == '' ? 'nigeria' : topic;
       final response = await DioClient.instance
           .get(RoutesAndPaths.everything, queryParameters: {
-        "q": '${topic ?? "nigeria"}}',
+        "q": theQuery,
         "apiKey": "948aa2afb2d14c989725beae7e49d6e4",
       });
-
+      logger.e(response);
       return right(NewsArticlesModel.fromMap(response));
     } on DioException catch (e) {
       final errorMessage = DioExceptionClass.fromDioException(e).errorMessage;

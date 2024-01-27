@@ -41,12 +41,12 @@ class Article {
     return Article(
       source: Source.fromMap(map['source']),
       author: map['author'],
-      title: map['title'],
+      title: map['title'] ?? '',
       description: map['description'],
-      url: map['url'],
+      url: map['url'] ?? '',
       urlToImage: map['urlToImage'],
-      publishedAt: map['publishedAt'],
-      content: map['content'],
+      publishedAt: map['publishedAt'] ?? '',
+      content: map['content'] ?? '',
     );
   }
 
