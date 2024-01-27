@@ -20,7 +20,7 @@ class NewsApiServiceImplementation implements NewsApiService {
     try {
       final response = await DioClient.instance
           .get(RoutesAndPaths.everything, queryParameters: {
-        "q": "$topic ?? france",
+        "q": '${topic ?? "nigeria"}}',
         "apiKey": "948aa2afb2d14c989725beae7e49d6e4",
       });
 

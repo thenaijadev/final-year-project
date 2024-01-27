@@ -12,6 +12,7 @@ import 'package:minimalist_social_app/config/theme/dark_theme.dart';
 import 'package:minimalist_social_app/config/theme/light_theme.dart';
 import 'package:minimalist_social_app/core/connection/network_info.dart';
 import 'package:minimalist_social_app/core/firebase/firebase_options.dart';
+import 'package:minimalist_social_app/core/observer/bloc_observer.dart';
 import 'package:minimalist_social_app/features/auth/data/datasources/local/local_user_data_source.dart';
 import 'package:minimalist_social_app/features/auth/data/datasources/remote/firebase_auth_service.dart';
 import 'package:minimalist_social_app/features/auth/data/datasources/remote/local_auth_service.dart';
@@ -31,7 +32,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
+  Bloc.observer = AppObserver();
   appInitialization();
   runApp(const MyApp());
 }
