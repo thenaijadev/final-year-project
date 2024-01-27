@@ -7,6 +7,7 @@ import 'package:minimalist_social_app/features/auth/presentation/screens/forgot_
 import 'package:minimalist_social_app/features/auth/presentation/screens/landing_screen.dart';
 import 'package:minimalist_social_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:minimalist_social_app/features/auth/presentation/screens/registration_screen.dart';
+import 'package:minimalist_social_app/features/daily_news/presentation/pages/home/daily_news.dart';
 import 'package:minimalist_social_app/features/home/presentation/pages/home_screen.dart';
 import 'package:minimalist_social_app/features/profile/presentation/pages/profile_screen.dart';
 import 'package:minimalist_social_app/features/users/presentation/pages/users_screen.dart';
@@ -39,7 +40,10 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const EmailVerificationScreen(),
         );
-
+      case Routes.news:
+        return MaterialPageRoute(
+          builder: (_) => const DailyNews(),
+        );
       case Routes.home:
         return MaterialPageRoute(
           builder: (_) => const HomeScreen(),

@@ -1,7 +1,7 @@
-import 'package:minimalist_social_app/core/errors/auth_error.dart';
+import 'package:minimalist_social_app/core/errors/article_error.dart';
 
-class LocalAuthUserError extends AuthError {
-  LocalAuthUserError({required super.message});
+class LocalDataSourceError extends ArticleError {
+  LocalDataSourceError({required super.message});
 
   @override
   String toString() => 'LocalDataSourceError(message: $message)';

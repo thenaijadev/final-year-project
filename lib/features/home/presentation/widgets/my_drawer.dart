@@ -45,6 +45,20 @@ class MyDrawer extends StatelessWidget {
             ),
             ListTile(
               onTap: () {
+                Navigator.pushNamed(context, Routes.news);
+              },
+              leading: Icon(
+                Icons.note,
+                color: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              title: TextWidget(
+                text: "N E W S",
+                color: Theme.of(context).colorScheme.secondary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            ListTile(
+              onTap: () {
                 Navigator.pushNamed(context, Routes.users);
               },
               leading: Icon(
