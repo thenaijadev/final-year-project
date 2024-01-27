@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:minimalist_social_app/config/router/routes.dart';
-import 'package:minimalist_social_app/core/utils/logger.dart';
 import 'package:minimalist_social_app/core/validator/validator.dart';
 import 'package:minimalist_social_app/core/widgets/loading_widget.dart';
 import 'package:minimalist_social_app/core/widgets/snackbar.dart';
@@ -10,7 +9,6 @@ import 'package:minimalist_social_app/core/widgets/text_widget.dart';
 import 'package:minimalist_social_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:minimalist_social_app/features/auth/presentation/widgets/form_button.dart';
 import 'package:minimalist_social_app/features/auth/presentation/widgets/input_field_widget.dart';
-import 'package:minimalist_social_app/features/dark_mode/presentation/bloc/dark_mode_bloc.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -46,28 +44,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
-                  Transform.scale(
-                    scale: .8,
-                    child: BlocBuilder<DarkModeBloc, DarkModeState>(
-                        builder: (context, state) {
-                      return state is DarkModeCurrentState
-                          ? Switch(
-                              activeColor: Colors.black,
-                              activeThumbImage:
-                                  const AssetImage("images/moon.png"),
-                              inactiveThumbImage:
-                                  const AssetImage("images/sun.png"),
-                              activeTrackColor:
-                                  const Color.fromARGB(255, 20, 20, 20),
-                              value: state.isDark,
-                              onChanged: (value) {
-                                context.read<DarkModeBloc>().add(
-                                    ToggleDarkModeEvent(isDark: !state.isDark));
-                              },
-                            )
-                          : const SizedBox();
-                    }),
-                  ),
                   Icon(Icons.person,
                       size: 80,
                       color: Theme.of(context).colorScheme.inversePrimary),
@@ -188,9 +164,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           : FormButton(
                               label: "Register",
                               onTap: () {
-                                logger.e(emailState);
-                                logger.e(confirmPasswordState);
-
                                 if (emailState! && confirmPasswordState!) {
                                   context.read<AuthBloc>().add(
                                       AuthEventCreateUser(
