@@ -56,16 +56,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void listen() {
-    setState(() {
-      isListening = !isListening;
-    });
-    controller.forward();
-    controller_1.forward();
-    if (isListening == false) {
-      controller.reverse();
-      controller_1.reverse();
-    }
-
     if (speechToText.isListening) {
       stopListening();
     } else {
@@ -80,14 +70,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void startListening() async {
-    controller_2.repeat(reverse: true);
-    await speechToText.listen(onResult: onSpeechResult);
+    await speechToText.listen(
+      listenOptions:
+          SpeechListenOptions(autoPunctuation: true, cancelOnError: true),
+      onResult: onSpeechResult,
+    );
+
+    if (speechToText.isListening) {
+      controller_2.repeat(reverse: true);
+      controller_1.forward();
+      controller.forward();
+      isListening = speechToText.isListening;
+    }
+
     setState(() {});
   }
 
   void stopListening() async {
-    controller_2.stop();
     await speechToText.stop();
+    controller.reverse();
+    controller_1.reverse();
+    controller_2.stop();
+
     setState(() {});
   }
 
@@ -116,7 +120,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ? "Listening ..."
                   : speechEnabled
                       ? "Tap microphone to start Listening"
-                      : "Speech is not available")
+                      : "Speech is not available"),
+              Text(wordsSpoken)
             ],
           ),
           Center(
@@ -139,14 +144,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         borderRadius: BorderRadius.circular(100),
                         border: Border.all(
                             width: 20,
-                            color: isListening
+                            color: speechToText.isListening
                                 ? Theme.of(context).colorScheme.inversePrimary
                                 : Theme.of(context).colorScheme.background),
                       ),
                       child: Icon(
                         Icons.mic,
                         size: 100,
-                        color: isListening
+                        color: speechToText.isListening
                             ? Theme.of(context).colorScheme.inversePrimary
                             : Theme.of(context).colorScheme.background,
                       ),
