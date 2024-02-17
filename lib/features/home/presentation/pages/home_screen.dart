@@ -97,38 +97,60 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(
-        centerTitle: true,
-        actions: const [
-          DarkModeSwitch(),
-        ],
+    return GestureDetector(
+      onDoubleTap: () {
+        listen();
+      },
+      child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
-        title: TextWidget(
-          text: "Assistant",
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.inversePrimary,
-        ),
-      ),
-      drawer: const MyDrawer(),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Text(speechToText.isListening
-                  ? "Listening ..."
-                  : speechEnabled
-                      ? "Tap microphone to start Listening"
-                      : "Speech is not available"),
-              Text(wordsSpoken)
-            ],
+        appBar: AppBar(
+          centerTitle: true,
+          actions: const [
+            DarkModeSwitch(),
+          ],
+          backgroundColor: Theme.of(context).colorScheme.background,
+          title: TextWidget(
+            text: "Assistant",
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.inversePrimary,
           ),
-          Center(
-              child: SlideTransition(
-            position: slideAnimation,
-            child: ScaleTransition(
-              scale: scaleAnimation_2,
+        ),
+        drawer: const MyDrawer(),
+        body: Stack(
+          alignment: AlignmentDirectional.topCenter,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Text(
+                    speechToText.isListening
+                        ? "Listening ..."
+                        : speechEnabled
+                            ? "Tap microphone to start Listening"
+                            : "Speech is not available",
+                    style: const TextStyle(fontSize: 22),
+                    textAlign: TextAlign.center,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 20, left: 15, right: 15),
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 30),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Text(
+                      "You: $wordsSpoken",
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Center(
+                child: SlideTransition(
+              position: slideAnimation,
               child: ScaleTransition(
                 scale: scaleAnimation,
                 child: GestureDetector(
@@ -159,9 +181,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-            ),
-          )),
-        ],
+            )),
+          ],
+        ),
       ),
     );
   }
