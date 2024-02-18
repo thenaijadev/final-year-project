@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minimalist_social_app/core/widgets/dark_mode_switch.dart';
 import 'package:minimalist_social_app/core/widgets/text_widget.dart';
-import 'package:minimalist_social_app/features/home/presentation/widgets/my_drawer.dart';
+import 'package:minimalist_social_app/features/AI/presentation/widgets/my_drawer.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 

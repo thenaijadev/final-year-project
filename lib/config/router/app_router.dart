@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minimalist_social_app/config/router/routes.dart';
 import 'package:minimalist_social_app/core/widgets/error_screen.dart';
+import 'package:minimalist_social_app/features/AI/presentation/pages/home_screen.dart';
 import 'package:minimalist_social_app/features/auth/presentation/screens/email_sent_screen.dart';
 import 'package:minimalist_social_app/features/auth/presentation/screens/email_verification_screen.dart';
 import 'package:minimalist_social_app/features/auth/presentation/screens/forgot_password_screen.dart';
@@ -8,7 +9,6 @@ import 'package:minimalist_social_app/features/auth/presentation/screens/landing
 import 'package:minimalist_social_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:minimalist_social_app/features/auth/presentation/screens/registration_screen.dart';
 import 'package:minimalist_social_app/features/daily_news/presentation/pages/home/daily_news.dart';
-import 'package:minimalist_social_app/features/home/presentation/pages/home_screen.dart';
 import 'package:minimalist_social_app/features/profile/presentation/pages/profile_screen.dart';
 import 'package:minimalist_social_app/features/users/presentation/pages/users_screen.dart';
 

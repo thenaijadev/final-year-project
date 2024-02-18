@@ -13,6 +13,9 @@ import 'package:minimalist_social_app/config/theme/light_theme.dart';
 import 'package:minimalist_social_app/core/connection/network_info.dart';
 import 'package:minimalist_social_app/core/firebase/firebase_options.dart';
 import 'package:minimalist_social_app/core/observer/bloc_observer.dart';
+import 'package:minimalist_social_app/features/AI/data/providers/ai_provider.dart';
+import 'package:minimalist_social_app/features/AI/data/repositories/ai_repository.dart';
+import 'package:minimalist_social_app/features/AI/presentation/bloc/bloc.dart';
 import 'package:minimalist_social_app/features/auth/data/datasources/local/local_user_data_source.dart';
 import 'package:minimalist_social_app/features/auth/data/datasources/remote/firebase_auth_service.dart';
 import 'package:minimalist_social_app/features/auth/data/datasources/remote/local_auth_service.dart';
@@ -95,6 +98,9 @@ class MyApp extends StatelessWidget {
               ),
             )..add(GetArticlesEvent()),
           ),
+          BlocProvider(
+              create: (context) =>
+                  AiBloc(repo: AiRepository(provider: AiProvider())))
         ],
         child: BlocBuilder<DarkModeBloc, DarkModeState>(
           builder: (context, state) {
