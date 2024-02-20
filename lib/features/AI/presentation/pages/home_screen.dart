@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:minimalist_social_app/core/utils/logger.dart';
 import 'package:minimalist_social_app/core/widgets/dark_mode_switch.dart';
 import 'package:minimalist_social_app/core/widgets/loading_widget.dart';
 import 'package:minimalist_social_app/core/widgets/snackbar.dart';
@@ -29,7 +31,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController controller;
   late AnimationController controller_1;
   late AnimationController controller_2;
-
+  FlutterTts flutterTts = FlutterTts();
+  late Map currentVoice;
   void initSpeech() async {
     speechEnabled = await speechToText.initialize();
     setState(() {});
@@ -51,6 +54,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         Tween<Offset>(begin: const Offset(0, 0), end: const Offset(.45, 1))
             .animate(CurvedAnimation(parent: controller_1, curve: Curves.ease));
     initSpeech();
+    initTTS();
+  }
+
+  void initTTS() async {
+    try {
+      final voices = await flutterTts.getVoices;
+      List<Map> voices0 = List<Map>.from(voices);
+      voices0 = voices0.where((voice) => voice["name"].contains('en')).toList();
+      setState(() {
+        currentVoice = voices0.first;
+        setVoice(currentVoice);
+      });
+    } catch (e) {
+      logger.e(e.toString());
+    }
+  }
+
+  void setVoice(Map voice) {
+    flutterTts.setVoice({"name": voice['name'], "locale": voice['locale']});
   }
 
   @override
@@ -65,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     } else {
       startListening();
     }
+    flutterTts.stop();
   }
 
   Future<void> onSpeechResult(SpeechRecognitionResult result) async {
@@ -159,6 +182,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               listener: (context, state) {
                 if (state is AiResponseError) {
                   InfoSnackBar.showErrorSnackBar(context, state.error.message);
+
+                  flutterTts.speak(
+                      "Unfortunately we are unable to help with that today");
+                }
+
+                if (state is AiResponseRetrieved) {
+                  String stringWithoutAsterisks =
+                      state.response.responseText!.replaceAll("*", " ");
+
+                  flutterTts.speak(stringWithoutAsterisks);
                 }
               },
               builder: (context, state) {
