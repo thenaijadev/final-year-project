@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minimalist_social_app/core/widgets/dark_mode_switch.dart';
+import 'package:minimalist_social_app/core/widgets/loading_widget.dart';
+import 'package:minimalist_social_app/core/widgets/snackbar.dart';
 import 'package:minimalist_social_app/core/widgets/text_widget.dart';
+import 'package:minimalist_social_app/features/AI/presentation/bloc/ai_bloc.dart';
 import 'package:minimalist_social_app/features/AI/presentation/widgets/my_drawer.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -63,9 +67,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  void onSpeechResult(SpeechRecognitionResult result) {
+  Future<void> onSpeechResult(SpeechRecognitionResult result) async {
     setState(() {
       wordsSpoken = result.recognizedWords;
+    });
+    Future.delayed(const Duration(seconds: 5), () {
+      context.read<AiBloc>().add(AiEventGetResponse(prompt: wordsSpoken));
     });
   }
 
@@ -133,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     textAlign: TextAlign.center,
                   ),
                   Container(
-                    margin: const EdgeInsets.only(top: 20, left: 15, right: 15),
+                    margin: const EdgeInsets.only(top: 10, left: 15, right: 15),
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
                         vertical: 20, horizontal: 30),
@@ -147,6 +154,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   )
                 ],
               ),
+            ),
+            BlocConsumer<AiBloc, AiState>(
+              listener: (context, state) {
+                if (state is AiResponseError) {
+                  InfoSnackBar.showErrorSnackBar(context, state.error.message);
+                }
+              },
+              builder: (context, state) {
+                return state is AiResponseIsLoading
+                    ? const LoadingWidget()
+                    : state is AiResponseRetrieved
+                        ? Container(
+                            margin: const EdgeInsets.only(
+                                top: 20, left: 15, right: 15),
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 30),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.secondary,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: ListView(children: [
+                              Text(
+                                "Ai: ${state.response.responseText}",
+                                textAlign: TextAlign.center,
+                              ),
+                            ]),
+                          )
+                        : const SizedBox();
+              },
             ),
             Center(
                 child: SlideTransition(

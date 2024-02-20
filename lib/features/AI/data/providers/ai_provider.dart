@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:minimalist_social_app/core/errors/ai_error.dart';
+import 'package:minimalist_social_app/core/utils/logger.dart';
 import 'package:minimalist_social_app/core/utils/typedef.dart';
 import 'package:minimalist_social_app/features/AI/data/models/ai_response_model.dart';
 
@@ -14,6 +15,7 @@ class AiProvider {
       final response = await model.generateContent(content);
       return right(AiResponse(responseText: response.text));
     } catch (e) {
+      logger.e(e.toString());
       return left(AIError(message: e.toString()));
     }
   }
