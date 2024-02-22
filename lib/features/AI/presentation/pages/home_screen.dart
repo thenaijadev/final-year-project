@@ -10,6 +10,7 @@ import 'package:minimalist_social_app/features/AI/presentation/bloc/ai_bloc.dart
 import 'package:minimalist_social_app/features/AI/presentation/widgets/my_drawer.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:torch_light/torch_light.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,6 +56,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             .animate(CurvedAnimation(parent: controller_1, curve: Curves.ease));
     initSpeech();
     initTTS();
+    initTorch();
+  }
+
+  void initTorch() async {
+    try {
+      final isTorchAvailable = await TorchLight.isTorchAvailable();
+    } on Exception catch (_) {
+      logger.e(_);
+    }
+  }
+
+  void torchOn() async {
+    try {
+      await TorchLight.enableTorch();
+    } on Exception catch (_) {
+      logger.e(_);
+    }
+  }
+
+  void torchOff() async {
+    try {
+      await TorchLight.disableTorch();
+    } on Exception catch (_) {
+      logger.e(_);
+    }
   }
 
   void initTTS() async {
@@ -94,9 +120,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {
       wordsSpoken = result.recognizedWords;
     });
-    Future.delayed(const Duration(seconds: 5), () {
-      context.read<AiBloc>().add(AiEventGetResponse(prompt: wordsSpoken));
-    });
+
+    if (wordsSpoken == "lumos") {
+      torchOn();
+      return;
+    }
+
+    if (wordsSpoken == "no lumos") {
+      Future.delayed(const Duration(seconds: 5), () {
+        print(wordsSpoken);
+
+        context.read<AiBloc>().add(AiEventGetResponse(prompt: wordsSpoken));
+      });
+    }
   }
 
   void startListening() async {
@@ -118,8 +154,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void stopListening() async {
     await speechToText.stop();
-    controller.reverse();
-    controller_1.reverse();
+    // controller.reverse();
+    // controller_1.reverse();
     controller_2.stop();
 
     setState(() {});
@@ -180,6 +216,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
             BlocConsumer<AiBloc, AiState>(
               listener: (context, state) {
+                if (state is AiResponseIsLoading) {
+                  flutterTts.speak("Please be patient as I assist you");
+                }
                 if (state is AiResponseError) {
                   InfoSnackBar.showErrorSnackBar(context, state.error.message);
 
@@ -208,9 +247,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 color: Theme.of(context).colorScheme.secondary,
                                 borderRadius: BorderRadius.circular(10)),
                             child: ListView(children: [
-                              Text(
-                                "Ai: ${state.response.responseText}",
-                                textAlign: TextAlign.center,
+                              TextWidget(
+                                text:
+                                    "Assistant: ${state.response.responseText}",
+                                textAlign: TextAlign.start,
+                                fontSize: 20,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary,
                               ),
                             ]),
                           )
