@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController controller_1;
   late AnimationController controller_2;
   FlutterTts flutterTts = FlutterTts();
+  String response = "";
   late Map currentVoice;
   void initSpeech() async {
     speechEnabled = await speechToText.initialize();
@@ -61,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void initTorch() async {
     try {
-      final isTorchAvailable = await TorchLight.isTorchAvailable();
+      await TorchLight.isTorchAvailable();
     } on Exception catch (_) {
       logger.e(_);
     }
@@ -123,13 +124,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     if (wordsSpoken == "lumos") {
       torchOn();
-      return;
-    }
-
-    if (wordsSpoken == "no lumos") {
+      flutterTts.speak("Flash Light On");
+    } else if (wordsSpoken == "no lumos") {
+      torchOff();
+      flutterTts.speak("Flash Light Off");
+    } else {
       Future.delayed(const Duration(seconds: 5), () {
-        print(wordsSpoken);
-
         context.read<AiBloc>().add(AiEventGetResponse(prompt: wordsSpoken));
       });
     }
@@ -227,10 +227,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 }
 
                 if (state is AiResponseRetrieved) {
-                  String stringWithoutAsterisks =
-                      state.response.responseText!.replaceAll("*", " ");
+                  response = state.response.responseText!.replaceAll("*", " ");
 
-                  flutterTts.speak(stringWithoutAsterisks);
+                  flutterTts.speak(response);
                 }
               },
               builder: (context, state) {
@@ -249,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             child: ListView(children: [
                               TextWidget(
                                 text:
-                                    "Assistant: ${state.response.responseText}",
+                                    "Assistant: ${state.response.responseText!.replaceAll("*", " ")}",
                                 textAlign: TextAlign.start,
                                 fontSize: 20,
                                 color: Theme.of(context)

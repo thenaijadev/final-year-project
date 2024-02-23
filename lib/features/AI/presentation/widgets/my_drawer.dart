@@ -31,20 +31,6 @@ class MyDrawer extends StatelessWidget {
             ),
             ListTile(
               onTap: () {
-                Navigator.pushNamed(context, Routes.profile);
-              },
-              leading: Icon(
-                Icons.person,
-                color: Theme.of(context).colorScheme.inversePrimary,
-              ),
-              title: TextWidget(
-                text: "P R O F I L E",
-                color: Theme.of(context).colorScheme.secondary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ListTile(
-              onTap: () {
                 Navigator.pushNamed(context, Routes.news);
               },
               leading: Icon(
@@ -53,20 +39,6 @@ class MyDrawer extends StatelessWidget {
               ),
               title: TextWidget(
                 text: "N E W S",
-                color: Theme.of(context).colorScheme.secondary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ListTile(
-              onTap: () {
-                Navigator.pushNamed(context, Routes.users);
-              },
-              leading: Icon(
-                Icons.group,
-                color: Theme.of(context).colorScheme.inversePrimary,
-              ),
-              title: TextWidget(
-                text: "U S E R S",
                 color: Theme.of(context).colorScheme.secondary,
                 fontWeight: FontWeight.bold,
               ),
