@@ -88,7 +88,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     try {
       final voices = await flutterTts.getVoices;
       List<Map> voices0 = List<Map>.from(voices);
-      voices0 = voices0.where((voice) => voice["name"].contains('en')).toList();
+      voices0 = voices0.where((voice) => voice["name"].contains('NG')).toList();
+      logger.e(voices0);
       setState(() {
         currentVoice = voices0.first;
         setVoice(currentVoice);
