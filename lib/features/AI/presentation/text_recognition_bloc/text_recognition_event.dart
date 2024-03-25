@@ -8,5 +8,6 @@ abstract class TextRecognitionEvent extends Equatable {
 }
 
 class TextRecognitionEventGetText extends TextRecognitionEvent {
-  const TextRecognitionEventGetText();
+  final String path;
+  const TextRecognitionEventGetText({required this.path});
 }

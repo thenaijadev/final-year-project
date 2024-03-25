@@ -6,7 +6,8 @@ class MlKitProvider {
   MlKitProvider({
     required this.path,
   });
-  Future<String> _processImage() async {
+
+  Future<String> processImage() async {
     final InputImage inputImage = InputImage.fromFilePath(path);
     final textRecognizer = TextRecognizer();
 
