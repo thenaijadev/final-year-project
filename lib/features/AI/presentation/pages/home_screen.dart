@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:minimalist_social_app/core/utils/logger.dart';
 import 'package:minimalist_social_app/core/widgets/dark_mode_switch.dart';
 import 'package:minimalist_social_app/core/widgets/loading_widget.dart';
@@ -24,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool speechEnabled = false;
   bool isListening = false;
   String wordsSpoken = "";
+  File? _selectedImage;
   late Animation<double> scaleAnimation;
   late Animation<double> scaleAnimation_2;
 
@@ -88,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     try {
       final voices = await flutterTts.getVoices;
       List<Map> voices0 = List<Map>.from(voices);
+      //  voices0 = voices0.where((voice) => voice["name"].contains('en')).toList();
       voices0 = voices0.where((voice) => voice["name"].contains('NG')).toList();
       logger.e(voices0);
       setState(() {
@@ -129,11 +135,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     } else if (wordsSpoken == "no lumos") {
       torchOff();
       flutterTts.speak("Flash Light Off");
+    } else if (wordsSpoken.toLowerCase() == "read from storage") {
+      return _pickImageGallery();
+    } else if (wordsSpoken.toLowerCase() == "read from camera") {
+      return _pickImageCamera();
     } else {
       Future.delayed(const Duration(seconds: 5), () {
         context.read<AiBloc>().add(AiEventGetResponse(prompt: wordsSpoken));
       });
     }
+  }
+
+  Future _pickImageGallery() async {
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (returnedImage == null) return;
+    setState(() {
+      _selectedImage = File(returnedImage.path);
+    });
+  }
+
+  Future _pickImageCamera() async {
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (returnedImage == null) return;
+    setState(() {
+      _selectedImage = File(returnedImage.path);
+    });
   }
 
   void startListening() async {
