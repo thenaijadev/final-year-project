@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:minimalist_social_app/core/errors/auth_error.dart';
-import 'package:minimalist_social_app/core/utils/logger.dart';
 import 'package:minimalist_social_app/core/utils/typedef.dart';
 import 'package:minimalist_social_app/features/auth/data/models/auth_user_model.dart';
 
@@ -26,7 +25,7 @@ abstract class FirebaseAuthService {
 class FirebaseAuthServiceImlementation implements FirebaseAuthService {
   EitherAuthUserOrAuthError get currentUser {
     final user = FirebaseAuth.instance.currentUser;
-    logger.e(user.toString());
+    (user.toString());
     if (user != null) {
       return right(AuthUserModel.fromFirebase(
         user,

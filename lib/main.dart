@@ -14,8 +14,11 @@ import 'package:minimalist_social_app/core/connection/network_info.dart';
 import 'package:minimalist_social_app/core/firebase/firebase_options.dart';
 import 'package:minimalist_social_app/core/observer/bloc_observer.dart';
 import 'package:minimalist_social_app/features/AI/data/providers/ai_provider.dart';
+import 'package:minimalist_social_app/features/AI/data/providers/ml_kit_provider.dart';
 import 'package:minimalist_social_app/features/AI/data/repositories/ai_repository.dart';
+import 'package:minimalist_social_app/features/AI/data/repositories/mi_kit_repository.dart';
 import 'package:minimalist_social_app/features/AI/presentation/bloc/bloc.dart';
+import 'package:minimalist_social_app/features/AI/presentation/text_recognition_bloc/text_recognition_bloc.dart';
 import 'package:minimalist_social_app/features/auth/data/datasources/local/local_user_data_source.dart';
 import 'package:minimalist_social_app/features/auth/data/datasources/remote/firebase_auth_service.dart';
 import 'package:minimalist_social_app/features/auth/data/datasources/remote/local_auth_service.dart';
@@ -64,6 +67,10 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => DarkModeBloc(),
+          ),
+          BlocProvider(
+            create: (context) => TextRecognitionBloc(
+                repo: MlKitRepository(mlKitProvider: MlKitProvider())),
           ),
           BlocProvider(
             create: (context) => AuthBloc(

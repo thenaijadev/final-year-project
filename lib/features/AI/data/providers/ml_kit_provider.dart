@@ -2,12 +2,9 @@
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class MlKitProvider {
-  final String path;
-  MlKitProvider({
-    required this.path,
-  });
+  MlKitProvider();
 
-  Future<String> processImage() async {
+  Future<String> processImage({required String path}) async {
     final InputImage inputImage = InputImage.fromFilePath(path);
     final textRecognizer = TextRecognizer();
 

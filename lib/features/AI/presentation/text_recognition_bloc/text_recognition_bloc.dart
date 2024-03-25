@@ -13,7 +13,7 @@ class TextRecognitionBloc
       : super(TextRecognitionInitialState()) {
     on<TextRecognitionEventGetText>((event, emit) async {
       try {
-        final String recognizedText = await repo.processImage();
+        final String recognizedText = await repo.processImage(path: event.path);
 
         emit(TextRecognitionTextRecognized(recognizedText: recognizedText));
       } catch (e) {

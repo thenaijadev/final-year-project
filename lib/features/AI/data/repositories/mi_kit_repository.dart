@@ -4,7 +4,7 @@ class MlKitRepository {
   final MlKitProvider mlKitProvider;
 
   MlKitRepository({required this.mlKitProvider});
-  Future<String> processImage() async {
-    return mlKitProvider.processImage();
+  Future<String> processImage({required String path}) async {
+    return mlKitProvider.processImage(path: path);
   }
 }
