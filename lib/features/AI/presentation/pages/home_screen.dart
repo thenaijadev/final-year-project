@@ -206,7 +206,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         flutterTts.speak(extractedText);
         break;
       default:
-        context.read<AiBloc>().add(AiEventGetResponse(prompt: wordsSpoken));
+        Future.delayed(const Duration(seconds: 5), () {
+          context.read<AiBloc>().add(AiEventGetResponse(prompt: wordsSpoken));
+        });
     }
   }
 
