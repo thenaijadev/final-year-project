@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String wordsExtracted = "";
   // ignore: unused_field
   String _selectedImagePath = "";
+  final bool _isApi = false;
   late Animation<double> scaleAnimation;
   late Animation<double> scaleAnimation_2;
 
@@ -176,39 +177,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {
       wordsSpoken = result.recognizedWords;
     });
+    // Define the excluded words
+    const excludedWords = [
+      "lumos",
+      "no lumos",
+      "read from camera",
+      "read from storage"
+    ];
 
-    switch (wordsSpoken.toLowerCase()) {
-      case "lumos":
-        torchOn();
-        flutterTts.speak("Flash Light On");
-        break;
-      case "no lumos":
-        torchOff();
-        flutterTts.speak("Flash Light Off");
-        break;
-      case "read from camera":
-        await _pickImageCamera();
-        break;
-
-      case "read from storage":
-        await _pickImageGallery();
-        logger.e(_selectedImagePath);
-        final InputImage inputImage =
-            InputImage.fromFilePath(_selectedImagePath);
-        final textRecognizer = TextRecognizer();
-        final RecognizedText recognizedText =
-            await textRecognizer.processImage(inputImage);
-        String extractedText = recognizedText.text;
-        logger.e(extractedText);
-        setState(() {
-          wordsExtracted = extractedText;
-        });
-        flutterTts.speak(extractedText);
-        break;
-      default:
+    // Check if the spoken words are in the excluded list
+    if (!excludedWords.contains(wordsSpoken.toLowerCase())) {
+      if (wordsSpoken.toLowerCase().contains("assistant")) {
         Future.delayed(const Duration(seconds: 5), () {
           context.read<AiBloc>().add(AiEventGetResponse(prompt: wordsSpoken));
         });
+      }
+
+      logger
+          .e({excludedWords.contains(wordsSpoken.toLowerCase()), wordsSpoken});
+    } else {
+      switch (wordsSpoken.toLowerCase()) {
+        case "lumos":
+          torchOn();
+          flutterTts.speak("Flash Light On");
+          break;
+        case "no lumos":
+          torchOff();
+          flutterTts.speak("Flash Light Off");
+          break;
+        case "read from camera":
+          await _pickImageCamera();
+          break;
+
+        case "read from storage":
+          await _pickImageGallery();
+          logger.e(_selectedImagePath);
+          final InputImage inputImage =
+              InputImage.fromFilePath(_selectedImagePath);
+          final textRecognizer = TextRecognizer();
+          final RecognizedText recognizedText =
+              await textRecognizer.processImage(inputImage);
+          String extractedText = recognizedText.text;
+          logger.e(extractedText);
+          setState(() {
+            wordsExtracted = extractedText;
+          });
+          flutterTts.speak(extractedText);
+
+          break;
+        default:
+          Future.delayed(const Duration(seconds: 5), () {});
+      }
     }
   }
 

@@ -120,7 +120,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (state.user.isEmailVerified == false) {
                           Navigator.pushReplacementNamed(
                               context, Routes.emailVerification);
-                          // (state.user.isEmailVerified);
                         }
                         Navigator.popAndPushNamed(context, Routes.home);
                       }
