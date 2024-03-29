@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:minimalist_social_app/core/utils/logger.dart';
 import 'package:minimalist_social_app/core/widgets/dark_mode_switch.dart';
 import 'package:minimalist_social_app/core/widgets/loading_widget.dart';
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<double> scaleAnimation_2;
 
   late Animation<Offset> slideAnimation;
-
+  String dateAndTime = "";
   late AnimationController controller;
   late AnimationController controller_1;
   late AnimationController controller_2;
@@ -182,8 +183,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       "lumos",
       "no lumos",
       "read from camera",
-      "read from storage"
+      "read from storage",
+      "time please"
     ];
+    String getFormattedDateTime() {
+      final now = DateTime.now();
+      print(DateFormat.yMMMd().format(DateTime.now()));
+
+      final dayFormat = DateFormat('d'); // Format for "25th"
+      final monthFormat = DateFormat('MMMM'); // Format for "June"
+      final yearFormat = DateFormat('yyyy'); // Format for "2024"
+      final timeFormat = DateFormat.jm(); // Format for "5:30pm"
+
+      final day = dayFormat.format(now);
+      logger.i(day);
+      final month = monthFormat.format(now);
+      final year = yearFormat.format(now);
+      final time = timeFormat.format(now);
+
+      return '$day th of $month $year, $time';
+    }
 
     // Check if the spoken words are in the excluded list
     if (!excludedWords.contains(wordsSpoken.toLowerCase())) {
@@ -205,8 +224,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           torchOff();
           flutterTts.speak("Flash Light Off");
           break;
+
+        case "time please":
+          setState(() {
+            dateAndTime = getFormattedDateTime();
+          });
+
+          flutterTts.speak(dateAndTime);
+
+          break;
         case "read from camera":
           await _pickImageCamera();
+          logger.e(_selectedImagePath);
+          final InputImage inputImage =
+              InputImage.fromFilePath(_selectedImagePath);
+          final textRecognizer = TextRecognizer();
+          final RecognizedText recognizedText =
+              await textRecognizer.processImage(inputImage);
+          String extractedText = recognizedText.text;
+          logger.e(extractedText);
+          setState(() {
+            wordsExtracted = extractedText;
+          });
+          flutterTts.speak(extractedText);
           break;
 
         case "read from storage":
@@ -335,9 +375,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 30),
                             decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.secondary,
+                                color: wordsExtracted == "" && dateAndTime == ""
+                                    ? Colors.transparent
+                                    : Theme.of(context).colorScheme.secondary,
                                 borderRadius: BorderRadius.circular(10)),
                             child: ListView(children: [
+                              TextWidget(
+                                text: dateAndTime == ""
+                                    ? ""
+                                    : "Assistant: $dateAndTime",
+                                textAlign: TextAlign.start,
+                                fontSize: 20,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary,
+                              ),
                               TextWidget(
                                 text: wordsExtracted == ""
                                     ? ""
