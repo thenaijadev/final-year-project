@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String wordsExtracted = "";
   // ignore: unused_field
   String _selectedImagePath = "";
-  final bool _isApi = false;
+  // final bool _isApi = false;
   late Animation<double> scaleAnimation;
   late Animation<double> scaleAnimation_2;
 
@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       final timeFormat = DateFormat.jm(); // Format for "5:30pm"
 
       final day = dayFormat.format(now);
-      logger.i(day);
+
       final month = monthFormat.format(now);
       final year = yearFormat.format(now);
       final time = timeFormat.format(now);
@@ -228,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         case "time please":
           setState(() {
             dateAndTime = getFormattedDateTime();
+            wordsExtracted = "";
           });
 
           flutterTts.speak(dateAndTime);
@@ -245,6 +246,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           logger.e(extractedText);
           setState(() {
             wordsExtracted = extractedText;
+            dateAndTime = "";
           });
           flutterTts.speak(extractedText);
           break;
@@ -261,6 +263,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           logger.e(extractedText);
           setState(() {
             wordsExtracted = extractedText;
+            dateAndTime = "";
           });
           flutterTts.speak(extractedText);
 
