@@ -15,10 +15,8 @@ export 'package:minimalist_social_app/features/auth/data/repositories/firebase_a
 export 'package:minimalist_social_app/features/auth/data/repositories/local_auth_repository_implementation.dart';
 export 'package:minimalist_social_app/features/auth/domain/usecases/auth_usecases.dart';
 export 'package:minimalist_social_app/features/auth/presentation/bloc/auth_bloc.dart';
-export 'package:minimalist_social_app/features/daily_news/data/datasources/local/local_article_datasource.dart';
 export 'package:minimalist_social_app/features/daily_news/data/datasources/remote/news_api_service.dart';
-export 'package:minimalist_social_app/features/daily_news/data/repositories/article_repository.dart';
-export 'package:minimalist_social_app/features/daily_news/domain/usecases/get_article_usecase.dart';
+
 export 'package:minimalist_social_app/features/daily_news/presentation/bloc/daily_news_bloc.dart';
 export 'package:minimalist_social_app/features/dark_mode/presentation/bloc/dark_mode_bloc.dart';
 export 'package:shared_preferences/shared_preferences.dart';

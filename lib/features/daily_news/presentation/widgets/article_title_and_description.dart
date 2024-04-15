@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:minimalist_social_app/features/daily_news/data/models/unit_article.dart';
 
 class ArticleTitleAndDescription extends StatelessWidget {
   const ArticleTitleAndDescription({super.key, required this.article});
-  final Article? article;
+  final Map<String, dynamic> article;
   @override
   Widget build(BuildContext context) {
+    print(article);
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 7),
@@ -15,7 +15,7 @@ class ArticleTitleAndDescription extends StatelessWidget {
           children: [
             // Title
             Text(
-              article!.title,
+              "hi",
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -30,7 +30,7 @@ class ArticleTitleAndDescription extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text(article!.description ?? '',
+                child: Text(article["snippet"],
                     maxLines: 2,
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.secondary)),
@@ -43,7 +43,7 @@ class ArticleTitleAndDescription extends StatelessWidget {
                 const Icon(Icons.timeline_outlined, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                  article!.publishedAt,
+                  article["timeStamp"],
                   style: const TextStyle(
                     fontSize: 12,
                   ),

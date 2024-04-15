@@ -43,20 +43,7 @@ class _MyMultiBlocProviderState extends State<MyMultiBlocProvider> {
           ),
         ),
         BlocProvider<DailyNewsBloc>(
-          create: (context) => DailyNewsBloc(
-            GetArticleUseCase(
-              articleRepository: ArticleRepositoryImplementation(
-                newsApiService: NewsApiServiceImplementation(),
-                localDataSource: ArticlesLocalDataSourceImpl(
-                  sharedPreferences: SharedPreferences.getInstance(),
-                ),
-                networkInfo: NetworkInfoImpl(
-                  connectionChecker: DataConnectionChecker(),
-                ),
-              ),
-            ),
-          )..add(GetArticlesEvent()),
-        ),
+            create: (context) => DailyNewsBloc(NewsApiService())),
         BlocProvider(
             create: (context) =>
                 AiBloc(repo: AiRepository(provider: AiProvider())))

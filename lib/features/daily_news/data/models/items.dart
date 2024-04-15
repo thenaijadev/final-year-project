@@ -1,33 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-class Article {
-  String? status;
-  List<Items>? items;
-
-  Article({
-    this.status,
-    this.items,
-  });
-
-  Article.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    if (json['items'] != null) {
-      items = <Items>[];
-      json['items'].forEach((v) {
-        items!.add(Items.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['status'] = status;
-    if (items != null) {
-      data['items'] = items!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
 class Items {
   String? title;
   String? snippet;

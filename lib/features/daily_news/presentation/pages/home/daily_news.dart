@@ -62,12 +62,12 @@ class _DailyNewsState extends State<DailyNews> {
             }
             if (state is RemoteArticleDone) {
               return ListView.builder(
-                  itemCount: (state.articles.articles.length),
+                  itemCount: (state.articles["items"].length),
                   itemBuilder: (context, index) {
                     return FadeInUp(
                       delay: const Duration(milliseconds: 200),
                       child: ArticleWidget(
-                          article: state.articles.articles[index]),
+                          article: state.articles["items"][index]),
                     );
                   });
             } else {

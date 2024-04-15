@@ -1,18 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:minimalist_social_app/core/exports/bloc_provider_exports.dart';
 import 'package:minimalist_social_app/core/utils/logger.dart';
 import 'package:minimalist_social_app/core/widgets/dark_mode_switch.dart';
 import 'package:minimalist_social_app/core/widgets/loading_widget.dart';
 import 'package:minimalist_social_app/core/widgets/snackbar.dart';
 import 'package:minimalist_social_app/core/widgets/text_widget.dart';
-import 'package:minimalist_social_app/features/AI/presentation/bloc/ai_bloc.dart';
-import 'package:minimalist_social_app/features/AI/presentation/bloc/bloc.dart';
 import 'package:minimalist_social_app/features/AI/presentation/widgets/my_drawer.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -50,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {});
   }
 
+  String news = '';
   @override
   void initState() {
     super.initState();
@@ -186,17 +186,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       "read from storage",
       "time please"
     ];
+
     String getFormattedDateTime() {
       final now = DateTime.now();
-      print(DateFormat.yMMMd().format(DateTime.now()));
-
       final dayFormat = DateFormat('d'); // Format for "25th"
       final monthFormat = DateFormat('MMMM'); // Format for "June"
       final yearFormat = DateFormat('yyyy'); // Format for "2024"
       final timeFormat = DateFormat.jm(); // Format for "5:30pm"
 
       final day = dayFormat.format(now);
-
       final month = monthFormat.format(now);
       final year = yearFormat.format(now);
       final time = timeFormat.format(now);
@@ -210,6 +208,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         Future.delayed(const Duration(seconds: 5), () {
           context.read<AiBloc>().add(AiEventGetResponse(prompt: wordsSpoken));
         });
+      } else if (wordsSpoken.toLowerCase().contains("news") ||
+          wordsSpoken.toLowerCase().contains("headlines")) {
+        Future.delayed(const Duration(seconds: 3), () {
+          context
+              .read<DailyNewsBloc>()
+              .add(GetArticlesEvent(query: wordsSpoken));
+        });
+      } else if (wordsSpoken.toLowerCase().contains("call")) {
+        if (wordsSpoken.toLowerCase().contains("francis")) {
+          String number = "09014138731";
+          await FlutterPhoneDirectCaller.callNumber(number);
+        }
+        if (wordsSpoken.toLowerCase().contains("joy")) {
+          String number = "09080285829";
+          await FlutterPhoneDirectCaller.callNumber(number);
+        }
+        // if (wordsSpoken.toLowerCase().contains("nick")) {
+        //   String number = "09014138731";
+        //   await FlutterPhoneDirectCaller.callNumber(number);
+        // }
+        // if (wordsSpoken.toLowerCase().contains("peter")) {
+        //   String number = "09014138731";
+        //   await FlutterPhoneDirectCaller.callNumber(number);
+        // }
       }
 
       logger
@@ -219,10 +241,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         case "lumos":
           torchOn();
           flutterTts.speak("Flash Light On");
-          break;
-        case "no lumos":
-          torchOff();
-          flutterTts.speak("Flash Light Off");
           break;
 
         case "time please":
@@ -295,153 +313,182 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
         drawer: const MyDrawer(),
-        body: Stack(
-          alignment: AlignmentDirectional.topCenter,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  // Image.file(_selectedImage!),
-                  Text(
-                    speechToText.isListening
-                        ? "Listening ..."
-                        : speechEnabled
-                            ? "Tap microphone to start Listening"
-                            : "Speech is not available",
-                    style: const TextStyle(fontSize: 22),
-                    textAlign: TextAlign.center,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 10, left: 15, right: 15),
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 30),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Text(
-                      "You: $wordsSpoken",
+        body: BlocListener<DailyNewsBloc, DailyNewsState>(
+          listener: (context, state) {
+            if (state is RemoteArticleDone) {
+              for (var item in state.articles["items"]) {
+                flutterTts.speak(item["title"]);
+                Future.delayed(const Duration(seconds: 5), () {});
+                setState(() {
+                  news = state.articles["items"].toString();
+                });
+              }
+            }
+          },
+          child: Stack(
+            alignment: AlignmentDirectional.topCenter,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    // Image.file(_selectedImage!),
+                    Text(
+                      speechToText.isListening
+                          ? "Listening ..."
+                          : speechEnabled
+                              ? "Tap microphone to start Listening"
+                              : "Speech is not available",
+                      style: const TextStyle(fontSize: 22),
                       textAlign: TextAlign.center,
                     ),
-                  )
-                ],
-              ),
-            ),
-            BlocConsumer<AiBloc, AiState>(
-              listener: (context, state) {
-                if (state is AiResponseIsLoading) {
-                  flutterTts.speak("Please be patient as I assist you");
-                }
-                if (state is AiResponseError) {
-                  InfoSnackBar.showErrorSnackBar(context, state.error.message);
-
-                  flutterTts.speak(
-                      "Unfortunately we are unable to help with that today");
-                }
-
-                if (state is AiResponseRetrieved) {
-                  response = state.response.responseText!.replaceAll("*", " ");
-
-                  flutterTts.speak(response);
-                }
-              },
-              builder: (context, state) {
-                return state is AiResponseIsLoading
-                    ? const LoadingWidget()
-                    : state is AiResponseRetrieved
-                        ? Container(
-                            margin: const EdgeInsets.only(
-                                top: 20, left: 15, right: 15),
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 30),
-                            decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.secondary,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: ListView(children: [
-                              TextWidget(
-                                text:
-                                    "Assistant: ${state.response.responseText!.replaceAll("*", " ")}",
-                                textAlign: TextAlign.start,
-                                fontSize: 20,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                              ),
-                            ]),
-                          )
-                        : Container(
-                            margin: const EdgeInsets.only(
-                                top: 20, left: 15, right: 15),
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 30),
-                            decoration: BoxDecoration(
-                                color: wordsExtracted == "" && dateAndTime == ""
-                                    ? Colors.transparent
-                                    : Theme.of(context).colorScheme.secondary,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: ListView(children: [
-                              TextWidget(
-                                text: dateAndTime == ""
-                                    ? ""
-                                    : "Assistant: $dateAndTime",
-                                textAlign: TextAlign.start,
-                                fontSize: 20,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                              ),
-                              TextWidget(
-                                text: wordsExtracted == ""
-                                    ? ""
-                                    : "Assistant: $wordsExtracted",
-                                textAlign: TextAlign.start,
-                                fontSize: 20,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                              ),
-                            ]),
-                          );
-              },
-            ),
-            Center(
-                child: SlideTransition(
-              position: slideAnimation,
-              child: ScaleTransition(
-                scale: scaleAnimation,
-                child: GestureDetector(
-                  onTap: () {
-                    listen();
-                  },
-                  child: CircleAvatar(
-                    radius: 160,
-                    child: Container(
-                      height: 200,
-                      width: 200,
+                    Container(
+                      margin:
+                          const EdgeInsets.only(top: 10, left: 15, right: 15),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 30),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(
-                            width: 20,
-                            color: speechToText.isListening
-                                ? Theme.of(context).colorScheme.inversePrimary
-                                : Theme.of(context).colorScheme.background),
+                          color: Theme.of(context).colorScheme.secondary,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: BlocBuilder<DailyNewsBloc, DailyNewsState>(
+                        builder: (context, state) {
+                          return state is RemoteArticleLoading
+                              ? const LoadingWidget()
+                              : state is RemoteArticleDone
+                                  ? Text(
+                                      "You: $wordsSpoken",
+                                      textAlign: TextAlign.center,
+                                    )
+                                  : Text(
+                                      "You: $wordsSpoken",
+                                      textAlign: TextAlign.center,
+                                    );
+                        },
                       ),
-                      child: Icon(
-                        Icons.mic,
-                        size: 100,
-                        color: speechToText.isListening
-                            ? Theme.of(context).colorScheme.inversePrimary
-                            : Theme.of(context).colorScheme.background,
+                    )
+                  ],
+                ),
+              ),
+              BlocConsumer<AiBloc, AiState>(
+                listener: (context, state) {
+                  if (state is AiResponseIsLoading) {
+                    flutterTts.speak("Please be patient as I assist you");
+                  }
+                  if (state is AiResponseError) {
+                    InfoSnackBar.showErrorSnackBar(
+                        context, state.error.message);
+
+                    flutterTts.speak(
+                        "Unfortunately we are unable to help with that today");
+                  }
+
+                  if (state is AiResponseRetrieved) {
+                    response =
+                        state.response.responseText!.replaceAll("*", " ");
+
+                    flutterTts.speak(response);
+                  }
+                },
+                builder: (context, state) {
+                  return state is AiResponseIsLoading
+                      ? const LoadingWidget()
+                      : state is AiResponseRetrieved
+                          ? Container(
+                              margin: const EdgeInsets.only(
+                                  top: 20, left: 15, right: 15),
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 20, horizontal: 30),
+                              decoration: BoxDecoration(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: ListView(children: [
+                                TextWidget(
+                                  text:
+                                      "Assistant: ${state.response.responseText!.replaceAll("*", " ")}",
+                                  textAlign: TextAlign.start,
+                                  fontSize: 20,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                ),
+                              ]),
+                            )
+                          : Container(
+                              margin: const EdgeInsets.only(
+                                  top: 20, left: 15, right: 15),
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 20, horizontal: 30),
+                              decoration: BoxDecoration(
+                                  color: wordsExtracted == "" &&
+                                          dateAndTime == ""
+                                      ? Colors.transparent
+                                      : Theme.of(context).colorScheme.secondary,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: ListView(children: [
+                                TextWidget(
+                                  text: dateAndTime == ""
+                                      ? ""
+                                      : "Assistant: $dateAndTime",
+                                  textAlign: TextAlign.start,
+                                  fontSize: 20,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                ),
+                                TextWidget(
+                                  text: wordsExtracted == ""
+                                      ? ""
+                                      : "Assistant: $wordsExtracted",
+                                  textAlign: TextAlign.start,
+                                  fontSize: 20,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                ),
+                              ]),
+                            );
+                },
+              ),
+              Center(
+                  child: SlideTransition(
+                position: slideAnimation,
+                child: ScaleTransition(
+                  scale: scaleAnimation,
+                  child: GestureDetector(
+                    onTap: () {
+                      listen();
+                    },
+                    child: CircleAvatar(
+                      radius: 160,
+                      child: Container(
+                        height: 200,
+                        width: 200,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(
+                              width: 20,
+                              color: speechToText.isListening
+                                  ? Theme.of(context).colorScheme.inversePrimary
+                                  : Theme.of(context).colorScheme.background),
+                        ),
+                        child: Icon(
+                          Icons.mic,
+                          size: 100,
+                          color: speechToText.isListening
+                              ? Theme.of(context).colorScheme.inversePrimary
+                              : Theme.of(context).colorScheme.background,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            )),
-          ],
+              )),
+            ],
+          ),
         ),
       ),
     );

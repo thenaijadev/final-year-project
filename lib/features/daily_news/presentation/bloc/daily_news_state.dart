@@ -12,7 +12,7 @@ class RemoteArticleLoading extends DailyNewsState {
 }
 
 class RemoteArticleDone extends DailyNewsState {
-  final NewsArticlesEntity articles;
+  final Map<String, dynamic> articles;
 
   RemoteArticleDone({
     required this.articles,

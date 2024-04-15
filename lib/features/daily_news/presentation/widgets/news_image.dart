@@ -1,15 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:minimalist_social_app/features/daily_news/data/models/unit_article.dart';
 
 class NewsImage extends StatelessWidget {
   const NewsImage({super.key, required this.article});
-  final Article? article;
+  final Map<String, dynamic>? article;
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-        imageUrl: article?.urlToImage ?? "",
+        imageUrl: "",
         imageBuilder: (context, imageProvider) => Padding(
               padding: const EdgeInsetsDirectional.only(end: 14),
               child: ClipRRect(

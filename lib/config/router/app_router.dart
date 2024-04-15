@@ -14,7 +14,7 @@ import 'package:minimalist_social_app/features/users/presentation/pages/users_sc
 
 class AppRouter {
   Route onGenerateRoute(RouteSettings routeSettings) {
-    // logger.i("This is the route: ${routeSettings.name}");
+    // ("This is the route: ${routeSettings.name}");
     switch (routeSettings.name) {
       case Routes.login:
         return MaterialPageRoute(
